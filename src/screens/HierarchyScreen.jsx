@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { usePlanner } from '../lib/store.jsx';
 import TaskRow from '../components/TaskRow.jsx';
 import GoalSheet from '../components/GoalSheet.jsx';
+import ListActions from '../components/ListActions.jsx';
+import SelectionBar from '../components/SelectionBar.jsx';
+import BulkSheet from '../components/BulkSheet.jsx';
 import { DOW_FULL, dowIndex, scopeTitle } from '../lib/date.js';
 
 const CHAIN = [
@@ -12,9 +15,24 @@ const CHAIN = [
 ];
 
 export default function HierarchyScreen({ onOpenTask }) {
-  const { selected, selectedDate, tasksOn, progressFor, goalFor, goalById, toggleTask } = usePlanner();
+  const {
+    selected,
+    selectedDate,
+    tasksOn,
+    progressFor,
+    goalFor,
+    goalById,
+    toggleTask,
+    selection,
+    startSelect,
+    stopSelect,
+    toggleSelect,
+    selectMany,
+    deleteMany
+  } = usePlanner();
   const [open, setOpen] = useState(2);
   const [editing, setEditing] = useState(null);
+  const [bulkOpen, setBulkOpen] = useState(false);
 
   const sel = selectedDate;
   const tasks = tasksOn(selected);
@@ -91,9 +109,13 @@ export default function HierarchyScreen({ onOpenTask }) {
       <div className="pad col gap-9">
         <div className="list-hd">
           <h2>Өнөөдрийн ажил</h2>
-          <span>
-            {done}/{tasks.length}
-          </span>
+          <ListActions
+            status={`${done}/${tasks.length}`}
+            selecting={selection.active}
+            onStart={() => startSelect()}
+            onStop={stopSelect}
+            onBulk={() => setBulkOpen(true)}
+          />
         </div>
         {tasks.length === 0 ? (
           <div className="empty">Энэ өдөр ажил алга.</div>
@@ -106,10 +128,25 @@ export default function HierarchyScreen({ onOpenTask }) {
               variant="pill"
               onToggle={toggleTask}
               onOpen={onOpenTask}
+              selecting={selection.active}
+              picked={selection.ids.includes(task.id)}
+              onPick={toggleSelect}
             />
           ))
         )}
       </div>
+
+      {selection.active && (
+        <SelectionBar
+          count={selection.ids.length}
+          total={tasks.length}
+          onAll={() => selectMany(tasks.map((t) => t.id))}
+          onNone={() => selectMany([])}
+          onDelete={() => deleteMany(selection.ids)}
+        />
+      )}
+
+      {bulkOpen && <BulkSheet date={sel} onClose={() => setBulkOpen(false)} />}
 
       {editing && (
         <GoalSheet goal={editing.goal} scope={editing.scope} date={sel} onClose={() => setEditing(null)} />

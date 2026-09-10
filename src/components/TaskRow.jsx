@@ -1,11 +1,54 @@
 import { SCOPE_LABEL } from '../lib/date.js';
 
 /**
- * Ажлын нэг мөр. Нүдэн дээр дарвал гүйцэтгэл солигдоно,
- * бусад хэсэгт дарвал засварын хуудас нээгдэнэ.
+ * Ажлын нэг мөр.
+ * Энгийн горимд: нүдэн дээр дарвал гүйцэтгэл солигдож, бусад хэсэгт дарвал засварын хуудас нээгдэнэ.
+ * Сонголтын горимд: мөрийн аль ч хэсэгт дарвал устгах багцад нэмэгдэнэ.
  */
-export default function TaskRow({ task, goal, variant = 'tag', dark = false, onToggle, onOpen }) {
+export default function TaskRow({
+  task,
+  goal,
+  variant = 'tag',
+  dark = false,
+  onToggle,
+  onOpen,
+  selecting = false,
+  picked = false,
+  onPick
+}) {
   const meta = [task.time, task.note].filter(Boolean).join(' · ');
+
+  const body = (
+    <>
+      <div className={`t-title${task.done ? ' is-done' : ''}${dark ? ' dark' : ''}`}>{task.title}</div>
+      {variant === 'tag' ? (
+        <div className="t-meta-row">
+          {meta && <span className="t-meta">{meta}</span>}
+          {goal && <span className="tag">{`${SCOPE_LABEL[goal.scope]}: ${goal.title}`}</span>}
+          {task.habit && !goal && <span className="tag">Зуршил</span>}
+        </div>
+      ) : (
+        meta && (
+          <div className="t-meta" style={{ marginTop: 4 }}>
+            {meta}
+          </div>
+        )
+      )}
+    </>
+  );
+
+  if (selecting) {
+    return (
+      <button
+        className={`task${variant === 'pill' ? ' center' : ''}${picked ? ' is-picked' : ''}`}
+        onClick={() => onPick(task.id)}
+        aria-pressed={picked}
+      >
+        <span className={`pickbox${picked ? ' is-on' : ''}${dark ? ' dark' : ''}`}>{picked ? '✓' : ''}</span>
+        <span className="t-body">{body}</span>
+      </button>
+    );
+  }
 
   return (
     <div className={`task${variant === 'pill' ? ' center' : ''}`}>
@@ -19,16 +62,7 @@ export default function TaskRow({ task, goal, variant = 'tag', dark = false, onT
       </button>
 
       <button className="t-body" onClick={() => onOpen(task)}>
-        <div className={`t-title${task.done ? ' is-done' : ''}${dark ? ' dark' : ''}`}>{task.title}</div>
-        {variant === 'tag' ? (
-          <div className="t-meta-row">
-            {meta && <span className="t-meta">{meta}</span>}
-            {goal && <span className="tag">{`${SCOPE_LABEL[goal.scope]}: ${goal.title}`}</span>}
-            {task.habit && !goal && <span className="tag">Зуршил</span>}
-          </div>
-        ) : (
-          meta && <div className="t-meta" style={{ marginTop: 4 }}>{meta}</div>
-        )}
+        {body}
       </button>
 
       {variant === 'pill' && <span className="pill">{goal ? SCOPE_LABEL[goal.scope] : 'Чөлөөт'}</span>}

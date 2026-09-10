@@ -7,7 +7,7 @@ import TabBar from './components/TabBar.jsx';
 import TaskSheet from './components/TaskSheet.jsx';
 
 function Shell() {
-  const { tab, setTab, accent, selected } = usePlanner();
+  const { tab, setTab, accent, selected, selection } = usePlanner();
   const [sheet, setSheet] = useState(null); // null | {task}
   const dark = tab === 'day';
 
@@ -24,18 +24,20 @@ function Shell() {
   const openTask = (task) => setSheet({ task });
 
   return (
-    <div className={`app${dark ? ' is-dark' : ''}`}>
+    <div className={`app${dark ? ' is-dark' : ''}${selection.active ? ' is-selecting' : ''}`}>
       {tab === 'calendar' && <CalendarScreen onOpenTask={openTask} />}
       {tab === 'hierarchy' && <HierarchyScreen onOpenTask={openTask} />}
       {tab === 'day' && <DayScreen onOpenTask={openTask} />}
 
-      <button
-        className={`fab${dark ? ' dark' : ''}`}
-        onClick={() => setSheet({ task: null })}
-        aria-label="Ажил нэмэх"
-      >
-        +
-      </button>
+      {!selection.active && (
+        <button
+          className={`fab${dark ? ' dark' : ''}`}
+          onClick={() => setSheet({ task: null })}
+          aria-label="Ажил нэмэх"
+        >
+          +
+        </button>
+      )}
 
       <TabBar tab={tab} onChange={setTab} dark={dark} />
 

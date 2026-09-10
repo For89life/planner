@@ -23,6 +23,12 @@ export function PlannerProvider({ children }) {
   const [tab, setTab] = useState('calendar');
   const [level, setLevel] = useState('month');
   const [selected, setSelected] = useState(() => dateKey(today()));
+  const [selection, setSelection] = useState({ active: false, ids: [] });
+
+  // Огноо эсвэл таб солигдвол сонголтын горимоос гарна
+  useEffect(() => {
+    setSelection({ active: false, ids: [] });
+  }, [selected, tab]);
 
   useEffect(() => {
     try {
@@ -47,6 +53,26 @@ export function PlannerProvider({ children }) {
   const deleteTask = useCallback((id) => {
     setData((d) => ({ ...d, tasks: d.tasks.filter((t) => t.id !== id) }));
   }, []);
+
+  /** Олон ажлыг нэг дор устгана. */
+  const deleteMany = useCallback((ids) => {
+    const set = new Set(ids);
+    if (set.size === 0) return;
+    setData((d) => ({ ...d, tasks: d.tasks.filter((t) => !set.has(t.id)) }));
+    setSelection({ active: false, ids: [] });
+  }, []);
+
+  const startSelect = useCallback((id) => setSelection({ active: true, ids: id ? [id] : [] }), []);
+  const stopSelect = useCallback(() => setSelection({ active: false, ids: [] }), []);
+  const toggleSelect = useCallback(
+    (id) =>
+      setSelection((s) => ({
+        active: true,
+        ids: s.ids.includes(id) ? s.ids.filter((x) => x !== id) : [...s.ids, id]
+      })),
+    []
+  );
+  const selectMany = useCallback((ids) => setSelection({ active: true, ids }), []);
 
   const saveGoal = useCallback((goal) => {
     setData((d) => {
@@ -94,6 +120,16 @@ export function PlannerProvider({ children }) {
 
   const progressFor = useCallback((scope, d) => progress(...scopeRange(scope, d)), [progress]);
 
+  /** Тухайн хугацаанд байгаа бүх ажил (устгах багцыг бүрдүүлэхэд) */
+  const tasksInRange = useCallback(
+    (from, to) => {
+      const a = dateKey(from);
+      const b = dateKey(to);
+      return data.tasks.filter((t) => t.date >= a && t.date <= b);
+    },
+    [data.tasks]
+  );
+
   const goalFor = useCallback(
     (scope, d) => data.goals.find((g) => g.scope === scope && g.key === scopeKey(scope, d)) || null,
     [data.goals]
@@ -115,9 +151,16 @@ export function PlannerProvider({ children }) {
     toggleTask,
     saveTask,
     deleteTask,
+    deleteMany,
+    selection,
+    startSelect,
+    stopSelect,
+    toggleSelect,
+    selectMany,
     saveGoal,
     reset,
     tasksOn,
+    tasksInRange,
     progress,
     progressFor,
     goalFor,

@@ -1,14 +1,30 @@
 import { useEffect, useMemo, useState } from 'react';
 import { usePlanner } from '../lib/store.jsx';
+import ListActions from '../components/ListActions.jsx';
+import SelectionBar from '../components/SelectionBar.jsx';
+import BulkSheet from '../components/BulkSheet.jsx';
 import { DOW_FULL, addDays, dateKey, dowIndex, isoWeek, minutesOf, today } from '../lib/date.js';
 
 const STREAK_DAYS = 14;
 const REMIND_WINDOW = 90; // минут
 
 export default function DayScreen({ onOpenTask }) {
-  const { selected, selectedDate, tasksOn, toggleTask, saveTask } = usePlanner();
+  const {
+    selected,
+    selectedDate,
+    tasksOn,
+    toggleTask,
+    saveTask,
+    selection,
+    startSelect,
+    stopSelect,
+    toggleSelect,
+    selectMany,
+    deleteMany
+  } = usePlanner();
   const [now, setNow] = useState(() => new Date());
   const [snoozedUntil, setSnoozedUntil] = useState(0);
+  const [bulkOpen, setBulkOpen] = useState(false);
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 30000);
@@ -125,30 +141,56 @@ export default function DayScreen({ onOpenTask }) {
         </div>
       )}
 
+      <div className="pad list-hd">
+        <h2>Өдрийн ажил</h2>
+        <ListActions
+          selecting={selection.active}
+          onStart={() => startSelect()}
+          onStop={stopSelect}
+          onBulk={() => setBulkOpen(true)}
+        />
+      </div>
+
       <div className="pad tl">
         {tasks.length === 0 ? (
           <div className="empty dark">Энэ өдөр ажил алга. + товчоор нэмнэ үү.</div>
         ) : (
           tasks.map((task) => {
             const isNow = task.id === currentId;
+            const picked = selection.ids.includes(task.id);
             return (
               <div className="tl-row" key={task.id}>
                 <div className="tl-time">{task.time || '—'}</div>
-                <div className={`tl-block${isNow ? ' is-now' : ''}`}>
-                  <span className={`tl-dot${task.done ? ' is-done' : isNow ? ' is-now' : ''}`} />
-                  <button className="t-body" onClick={() => onOpenTask(task)}>
-                    <div className={`t-title dark${task.done ? ' is-done' : ''}`}>{task.title}</div>
-                    {task.note && <div className="tl-meta">{task.note}</div>}
-                  </button>
+                {selection.active ? (
                   <button
-                    className={`box dark${task.done ? ' is-done' : ''}`}
-                    onClick={() => toggleTask(task.id)}
-                    aria-label={task.done ? 'Дуусаагүй болгох' : 'Дууссан болгох'}
-                    aria-pressed={task.done}
+                    className={`tl-block${picked ? ' is-picked' : ''}`}
+                    onClick={() => toggleSelect(task.id)}
+                    aria-pressed={picked}
                   >
-                    {task.done ? '✓' : ''}
+                    <span className={`tl-dot${task.done ? ' is-done' : ''}`} />
+                    <span className="t-body">
+                      <div className={`t-title dark${task.done ? ' is-done' : ''}`}>{task.title}</div>
+                      {task.note && <div className="tl-meta">{task.note}</div>}
+                    </span>
+                    <span className={`pickbox dark${picked ? ' is-on' : ''}`}>{picked ? '✓' : ''}</span>
                   </button>
-                </div>
+                ) : (
+                  <div className={`tl-block${isNow ? ' is-now' : ''}`}>
+                    <span className={`tl-dot${task.done ? ' is-done' : isNow ? ' is-now' : ''}`} />
+                    <button className="t-body" onClick={() => onOpenTask(task)}>
+                      <div className={`t-title dark${task.done ? ' is-done' : ''}`}>{task.title}</div>
+                      {task.note && <div className="tl-meta">{task.note}</div>}
+                    </button>
+                    <button
+                      className={`box dark${task.done ? ' is-done' : ''}`}
+                      onClick={() => toggleTask(task.id)}
+                      aria-label={task.done ? 'Дуусаагүй болгох' : 'Дууссан болгох'}
+                      aria-pressed={task.done}
+                    >
+                      {task.done ? '✓' : ''}
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })
@@ -165,6 +207,19 @@ export default function DayScreen({ onOpenTask }) {
         </div>
         <div className="summary-p">{pct}%</div>
       </div>
+
+      {selection.active && (
+        <SelectionBar
+          count={selection.ids.length}
+          total={tasks.length}
+          dark
+          onAll={() => selectMany(tasks.map((t) => t.id))}
+          onNone={() => selectMany([])}
+          onDelete={() => deleteMany(selection.ids)}
+        />
+      )}
+
+      {bulkOpen && <BulkSheet date={sel} dark onClose={() => setBulkOpen(false)} />}
     </div>
   );
 }

@@ -1,5 +1,9 @@
+import { useState } from 'react';
 import { usePlanner } from '../lib/store.jsx';
 import TaskRow from '../components/TaskRow.jsx';
+import ListActions from '../components/ListActions.jsx';
+import SelectionBar from '../components/SelectionBar.jsx';
+import BulkSheet from '../components/BulkSheet.jsx';
 import {
   DOW_SHORT,
   MONTHS_SHORT,
@@ -32,8 +36,15 @@ export default function CalendarScreen({ onOpenTask }) {
     progressFor,
     toggleTask,
     goalById,
-    reset
+    reset,
+    selection,
+    startSelect,
+    stopSelect,
+    toggleSelect,
+    selectMany,
+    deleteMany
   } = usePlanner();
+  const [bulkOpen, setBulkOpen] = useState(false);
 
   const sel = selectedDate;
   const t = today();
@@ -76,9 +87,13 @@ export default function CalendarScreen({ onOpenTask }) {
       <div className="pad col gap-9">
         <div className="list-hd">
           <h2>{dayTitle(sel)}</h2>
-          <span>
-            {doneCount}/{tasks.length} дууссан
-          </span>
+          <ListActions
+            status={`${doneCount}/${tasks.length} дууссан`}
+            selecting={selection.active}
+            onStart={() => startSelect()}
+            onStop={stopSelect}
+            onBulk={() => setBulkOpen(true)}
+          />
         </div>
         {tasks.length === 0 ? (
           <div className="empty">Энэ өдөр ажил алга. + товчоор нэмнэ үү.</div>
@@ -90,6 +105,9 @@ export default function CalendarScreen({ onOpenTask }) {
               goal={goalById(task.goalId)}
               onToggle={toggleTask}
               onOpen={onOpenTask}
+              selecting={selection.active}
+              picked={selection.ids.includes(task.id)}
+              onPick={toggleSelect}
             />
           ))
         )}
@@ -105,6 +123,18 @@ export default function CalendarScreen({ onOpenTask }) {
           </button>
         </div>
       </div>
+
+      {selection.active && (
+        <SelectionBar
+          count={selection.ids.length}
+          total={tasks.length}
+          onAll={() => selectMany(tasks.map((t) => t.id))}
+          onNone={() => selectMany([])}
+          onDelete={() => deleteMany(selection.ids)}
+        />
+      )}
+
+      {bulkOpen && <BulkSheet date={sel} onClose={() => setBulkOpen(false)} />}
     </div>
   );
 }
