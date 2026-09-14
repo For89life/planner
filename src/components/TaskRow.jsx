@@ -24,8 +24,8 @@ export default function TaskRow({
       {variant === 'tag' ? (
         <div className="t-meta-row">
           {meta && <span className="t-meta">{meta}</span>}
+          {task.habit && <span className="tag soft">Зуршил</span>}
           {goal && <span className="tag">{`${SCOPE_LABEL[goal.scope]}: ${goal.title}`}</span>}
-          {task.habit && !goal && <span className="tag">Зуршил</span>}
         </div>
       ) : (
         meta && (

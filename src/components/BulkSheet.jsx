@@ -3,7 +3,11 @@ import { MONTHS_SHORT, dayTitle, isoWeek, scopeRange } from '../lib/date.js';
 
 /** Багцаар устгах доод хуудас — өдөр / 7 хоног / сар / бүгд. */
 export default function BulkSheet({ date, dark = false, onClose }) {
-  const { data, tasksInRange, deleteMany } = usePlanner();
+  const { data, tasksInRange, deleteMany, clearTasksAndHabits } = usePlanner();
+
+  // Зуршил нь ирээдүйд хязгааргүй давтагддаг тул «бүгд» гэдгийг өдрөөр бус
+  // загвараар нь тоолж, ажил + зуршлыг бүхэлд нь устгана.
+  const allCount = data.tasks.length + data.habits.length;
 
   const rows = [
     { label: 'Энэ өдрийн бүх тэмдэглэл', sub: dayTitle(date), list: tasksInRange(date, date) },
@@ -17,10 +21,26 @@ export default function BulkSheet({ date, dark = false, onClose }) {
       sub: `${MONTHS_SHORT[date.getMonth()]} · ${date.getFullYear()}`,
       list: tasksInRange(...scopeRange('month', date))
     },
-    { label: 'Бүх тэмдэглэл', sub: 'Огноо харгалзахгүй, бүгдийг', list: data.tasks }
+    {
+      label: 'Бүх ажил, зуршил',
+      sub: `${data.tasks.length} ажил · ${data.habits.length} зуршил`,
+      count: allCount,
+      all: true
+    }
   ];
 
   function run(row) {
+    if (row.all) {
+      if (allCount === 0) return;
+      const ok = confirm(
+        `Бүх ажил (${data.tasks.length}) ба зуршил (${data.habits.length}) бүрмөсөн устана.\n\nЗорилго үлдэнэ.\n\nҮргэлжлүүлэх үү?`
+      );
+      if (!ok) return;
+      clearTasksAndHabits();
+      onClose();
+      return;
+    }
+
     if (row.list.length === 0) return;
     const ok = confirm(`${row.label} — ${row.list.length} тэмдэглэл бүрмөсөн устана.\n\nҮргэлжлүүлэх үү?`);
     if (!ok) return;
@@ -34,20 +54,27 @@ export default function BulkSheet({ date, dark = false, onClose }) {
         <h2>Багцаар устгах</h2>
 
         <div className="bulk-list">
-          {rows.map((row) => (
-            <button
-              key={row.label}
-              className={`bulk-row${row.list.length === 0 ? ' is-off' : ''}`}
-              onClick={() => run(row)}
-              disabled={row.list.length === 0}
-            >
-              <span className="bulk-text">
-                <span className="bulk-label">{row.label}</span>
-                <span className="bulk-sub">{row.sub}</span>
-              </span>
-              <span className="bulk-count">{row.list.length}</span>
-            </button>
-          ))}
+          {rows.map((row) => {
+            const n = row.count ?? row.list.length;
+            return (
+              <button
+                key={row.label}
+                className={`bulk-row${n === 0 ? ' is-off' : ''}`}
+                onClick={() => run(row)}
+                disabled={n === 0}
+              >
+                <span className="bulk-text">
+                  <span className="bulk-label">{row.label}</span>
+                  <span className="bulk-sub">{row.sub}</span>
+                </span>
+                <span className="bulk-count">{n}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="hint">
+          Өдөр / 7 хоног / сарын сонголт зуршлын тухайн өдрийг алгасна — зуршлын загвар өөрөө үлдэнэ.
         </div>
 
         <div className="sheet-actions">

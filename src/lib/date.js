@@ -121,6 +121,20 @@ export function weekDays(d) {
 
 export const sameDay = (a, b) => dateKey(a) === dateKey(b);
 
+/** [from, to] хоорондын өдрүүд (хоёуланг оруулаад). */
+export function eachDay(from, to) {
+  const out = [];
+  const end = dateKey(to);
+  let cur = new Date(from);
+  cur.setHours(0, 0, 0, 0);
+  let guard = 0;
+  while (dateKey(cur) <= end && guard++ < 800) {
+    out.push(cur);
+    cur = addDays(cur, 1);
+  }
+  return out;
+}
+
 /** "14:30" → 870 минут. Цаггүй бол null. */
 export function minutesOf(time) {
   if (!time) return null;

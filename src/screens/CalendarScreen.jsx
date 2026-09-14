@@ -4,6 +4,7 @@ import TaskRow from '../components/TaskRow.jsx';
 import ListActions from '../components/ListActions.jsx';
 import SelectionBar from '../components/SelectionBar.jsx';
 import BulkSheet from '../components/BulkSheet.jsx';
+import SearchButton from '../components/SearchButton.jsx';
 import {
   DOW_SHORT,
   MONTHS_SHORT,
@@ -36,7 +37,6 @@ export default function CalendarScreen({ onOpenTask }) {
     progressFor,
     toggleTask,
     goalById,
-    reset,
     selection,
     startSelect,
     stopSelect,
@@ -64,9 +64,12 @@ export default function CalendarScreen({ onOpenTask }) {
             </div>
             <div className="hd-title">{MONTHS_SHORT[sel.getMonth()]}</div>
           </div>
-          <div style={{ textAlign: 'right' }}>
-            <div className="hd-stat">{month.pct}%</div>
-            <div className="hd-sub">сарын гүйцэтгэл</div>
+          <div className="hd-right">
+            <SearchButton />
+            <div style={{ textAlign: 'right' }}>
+              <div className="hd-stat">{month.pct}%</div>
+              <div className="hd-sub">сарын гүйцэтгэл</div>
+            </div>
           </div>
         </div>
 
@@ -111,17 +114,6 @@ export default function CalendarScreen({ onOpenTask }) {
             />
           ))
         )}
-
-        <div className="reset-row">
-          <button
-            className="reset-btn"
-            onClick={() => {
-              if (confirm('Бүх өгөгдлийг жишээ өгөгдлөөр солих уу?')) reset();
-            }}
-          >
-            Жишээ өгөгдлөөр сэргээх
-          </button>
-        </div>
       </div>
 
       {selection.active && (
@@ -188,7 +180,7 @@ function QuarterView({ sel, go, setLevel, progressFor }) {
           >
             <div
               className="ring"
-              style={{ background: `conic-gradient(var(--accent) ${p.pct}%, rgba(0,0,0,.09) 0)` }}
+              style={{ background: `conic-gradient(var(--accent) ${p.pct}%, var(--soft) 0)` }}
             >
               <span>{p.total ? `${p.pct}%` : '—'}</span>
             </div>

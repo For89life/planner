@@ -3,6 +3,7 @@ import { usePlanner } from '../lib/store.jsx';
 import ListActions from '../components/ListActions.jsx';
 import SelectionBar from '../components/SelectionBar.jsx';
 import BulkSheet from '../components/BulkSheet.jsx';
+import SearchButton from '../components/SearchButton.jsx';
 import { DOW_FULL, addDays, dateKey, dowIndex, isoWeek, minutesOf, today } from '../lib/date.js';
 
 const STREAK_DAYS = 14;
@@ -96,11 +97,14 @@ export default function DayScreen({ onOpenTask }) {
             {sel.getMonth() + 1} сарын {sel.getDate()}
           </div>
         </div>
-        <div style={{ textAlign: 'right' }}>
-          <div className="hd-stat" style={{ fontSize: 20 }}>
-            {streak}
+        <div className="hd-right">
+          <SearchButton />
+          <div style={{ textAlign: 'right' }}>
+            <div className="hd-stat" style={{ fontSize: 20 }}>
+              {streak}
+            </div>
+            <div className="hd-sub">өдөр дараалан</div>
           </div>
-          <div className="hd-sub">өдөр дараалан</div>
         </div>
       </div>
 

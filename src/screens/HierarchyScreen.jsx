@@ -5,6 +5,7 @@ import GoalSheet from '../components/GoalSheet.jsx';
 import ListActions from '../components/ListActions.jsx';
 import SelectionBar from '../components/SelectionBar.jsx';
 import BulkSheet from '../components/BulkSheet.jsx';
+import SearchButton from '../components/SearchButton.jsx';
 import { DOW_FULL, dowIndex, scopeTitle } from '../lib/date.js';
 
 const CHAIN = [
@@ -40,11 +41,14 @@ export default function HierarchyScreen({ onOpenTask }) {
 
   return (
     <div className="screen" style={{ gap: 14 }}>
-      <div className="pad">
-        <div className="hd-eyebrow">Шатлал</div>
-        <div className="hd-title sm">
-          {DOW_FULL[dowIndex(sel)]}, {sel.getMonth() + 1}/{sel.getDate()} — яагаад чухал вэ
+      <div className="pad hd">
+        <div>
+          <div className="hd-eyebrow">Шатлал</div>
+          <div className="hd-title sm">
+            {DOW_FULL[dowIndex(sel)]}, {sel.getMonth() + 1}/{sel.getDate()} — яагаад чухал вэ
+          </div>
         </div>
+        <SearchButton />
       </div>
 
       <div className="pad col">

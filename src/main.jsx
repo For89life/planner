@@ -8,3 +8,12 @@ createRoot(document.getElementById('root')).render(
     <App />
   </StrictMode>
 );
+
+// Офлайн ажиллагаа — зөвхөн угсарсан хувилбарт (dev үед кэш саад болдог).
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {
+      /* http эсвэл дэмжихгүй орчин */
+    });
+  });
+}
