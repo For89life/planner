@@ -165,8 +165,19 @@ input, select, textarea { font: inherit; color: inherit; }
   text-align: left;
 }
 .mcard.is-cur { border-color: var(--accent); background: color-mix(in oklab, var(--accent) 8%, var(--card)); }
+.mcard-hd { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
 .mcard-name { font: 600 13px var(--sans); }
-.mcard-pct { font: 500 10px var(--mono); opacity: 0.6; margin-top: 2px; }
+.mcard-pct { font: 500 10px var(--mono); opacity: 0.6; }
+
+/* Жилийн харагдац — сар бүрийн өдрүүдийн бүдүүвч */
+.mini { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-top: 8px; }
+.mini-d { aspect-ratio: 1; border-radius: 2px; background: var(--soft); }
+.mini-d.is-off { background: transparent; }
+.mini-d.is-plan { background: color-mix(in oklab, var(--accent) 40%, transparent); }
+.mini-d.is-done { background: var(--green); }
+.mini-d.is-part { background: var(--amber); }
+.mini-d.is-miss { background: var(--dim); }
+.mini-d.is-now { outline: 1.5px solid var(--accent); outline-offset: 1px; }
 
 .track {
   height: 3px;
@@ -213,6 +224,24 @@ input, select, textarea { font: inherit; color: inherit; }
 }
 .qrow-name { font: 600 14px var(--sans); color: var(--ink); }
 .qrow-goal { font: 400 11.5px var(--sans); color: var(--muted-2); margin-top: 2px; }
+
+/* Улирлын харагдац — 3 сар бүтэн хуанлиар */
+.qmonth {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 13px 14px 14px;
+}
+.qmonth-hd { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; width: 100%; }
+.qmonth-name { font: 600 14px var(--sans); color: var(--ink); }
+.qmonth-pct { font: 600 12px var(--mono); color: var(--accent); }
+.qmonth-goal { font: 400 11.5px var(--sans); color: var(--muted-2); margin-top: 3px; }
+.dows.sm { margin: 10px 0 5px; gap: 3px; }
+.grid.sm { gap: 3px; }
+.cell.sm { height: 34px; border-radius: 9px; gap: 4px; }
+.cell.sm .cell-n { font-size: 11.5px; }
+.cell.sm .cell-track { width: 14px; height: 2.5px; }
+.cell.sm.is-today:not(.is-sel) { border-color: color-mix(in oklab, var(--accent) 50%, var(--line)); }
 
 /* ---------- Хуанли ---------- */
 
