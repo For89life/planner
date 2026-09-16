@@ -36,10 +36,37 @@ export function PlannerProvider({ children }) {
   const [selection, setSelection] = useState({ active: false, ids: [] });
   const [searchOpen, setSearchOpen] = useState(false);
   const [undo, setUndo] = useState(null); // { label, snapshot, id }
+  const [todayKey, setTodayKey] = useState(() => dateKey(today()));
+  const todayRef = useRef(todayKey);
 
   useEffect(() => {
     dataRef.current = data;
   }, [data]);
+
+  /**
+   * Өдөр солигдохыг ажиглана. Апп (ялангуяа утсан дээрх PWA) олон хоног нээлттэй
+   * байж болох тул «өнөөдөр» гэдгийг ачаалах үед нэг удаа тогтоовол шөнө дунд,
+   * эсвэл шинэ жил гармагц хуучин өдөр дээр гацна.
+   */
+  useEffect(() => {
+    const check = () => {
+      const now = dateKey(today());
+      const prev = todayRef.current;
+      if (now === prev) return;
+      todayRef.current = now;
+      setTodayKey(now);
+      // Хэрэглэгч өчигдрийг зориуд сонгоогүй, өнөөдөр дээр байсан бол хамт шилжинэ.
+      setSelected((s) => (s === prev ? now : s));
+    };
+    const id = setInterval(check, 30000);
+    document.addEventListener('visibilitychange', check);
+    window.addEventListener('focus', check);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener('visibilitychange', check);
+      window.removeEventListener('focus', check);
+    };
+  }, []);
 
   // Огноо эсвэл таб солигдвол сонголтын горимоос гарна
   useEffect(() => {
@@ -321,12 +348,16 @@ export function PlannerProvider({ children }) {
           if (t.done) done++;
         }
       }
-      const h = habitStats(data.habits, data.habitLog, from, to);
+      // Зуршил ирээдүйн бүх өдөрт давтагддаг тул «нийт»-д оруулбал ирээдүйн сар
+      // 0%, жилийн дүн худал бага болно. Тиймээс зуршлыг өнөөдрөөр тасална.
+      // (Хэрэглэгчийн өөрөө оруулсан ирээдүйн ажил бол санаатай төлөвлөгөө тул хэвээр тоологдоно.)
+      const end = b > todayKey ? parseKey(todayKey) : to;
+      const h = habitStats(data.habits, data.habitLog, from, end);
       done += h.done;
       total += h.total;
       return { done, total, pct: total ? Math.round((done / total) * 100) : 0 };
     },
-    [data.tasks, data.habits, data.habitLog]
+    [data.tasks, data.habits, data.habitLog, todayKey]
   );
 
   const progressFor = useCallback((scope, d) => progress(...scopeRange(scope, d)), [progress]);
@@ -384,6 +415,7 @@ export function PlannerProvider({ children }) {
     selected,
     setSelected,
     selectedDate: parseKey(selected),
+    todayKey,
     toggleTask,
     saveTask,
     deleteTask,

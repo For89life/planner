@@ -4,7 +4,7 @@ import ListActions from '../components/ListActions.jsx';
 import SelectionBar from '../components/SelectionBar.jsx';
 import BulkSheet from '../components/BulkSheet.jsx';
 import SearchButton from '../components/SearchButton.jsx';
-import { DOW_FULL, addDays, dateKey, dowIndex, isoWeek, minutesOf, today } from '../lib/date.js';
+import { DOW_FULL, addDays, dateKey, dowIndex, isoWeek, minutesOf, parseKey } from '../lib/date.js';
 
 const STREAK_DAYS = 14;
 const REMIND_WINDOW = 90; // минут
@@ -21,7 +21,8 @@ export default function DayScreen({ onOpenTask }) {
     stopSelect,
     toggleSelect,
     selectMany,
-    deleteMany
+    deleteMany,
+    todayKey
   } = usePlanner();
   const [now, setNow] = useState(() => new Date());
   const [snoozedUntil, setSnoozedUntil] = useState(0);
@@ -33,7 +34,7 @@ export default function DayScreen({ onOpenTask }) {
   }, []);
 
   const sel = selectedDate;
-  const t = useMemo(() => today(), []);
+  const t = useMemo(() => parseKey(todayKey), [todayKey]);
   const isToday = selected === dateKey(t);
   const tasks = tasksOn(selected);
   const done = tasks.filter((x) => x.done).length;
