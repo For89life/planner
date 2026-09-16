@@ -3,6 +3,7 @@ import { buildSeed } from './seed.js';
 import { dateKey, eachDay, parseKey, scopeKey, scopeRange, today } from './date.js';
 import {
   DEFAULT_SETTINGS,
+  emptyData,
   habitMatches,
   habitStats,
   isOccurrenceId,
@@ -17,13 +18,17 @@ const KEY = 'tulubluguu.v1'; // түлхүүр хэвээр — дотор нь 
 
 const Ctx = createContext(null);
 
+/**
+ * Анх нээхэд хоосон эхэлнэ — жишээ өгөгдөл автоматаар бөглөхгүй.
+ * Жишээ өгөгдөл хэрэгтэй бол Тохиргоо → «Жишээ өгөгдлөөр сэргээх».
+ */
 function load() {
   try {
     const raw = localStorage.getItem(KEY);
-    if (!raw) return buildSeed();
-    return migrate(JSON.parse(raw)) || buildSeed();
+    if (!raw) return emptyData();
+    return migrate(JSON.parse(raw)) || emptyData();
   } catch {
-    return buildSeed();
+    return emptyData();
   }
 }
 

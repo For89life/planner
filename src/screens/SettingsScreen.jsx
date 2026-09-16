@@ -88,7 +88,7 @@ export default function SettingsScreen({ onEditHabit }) {
           <div className="hd-title">Апп</div>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div className="hd-stat">{year.pct}%</div>
+          <div className="hd-stat">{year.total ? `${year.pct}%` : '—'}</div>
           <div className="hd-sub">жилийн гүйцэтгэл</div>
         </div>
       </div>

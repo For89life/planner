@@ -26,6 +26,18 @@ export const DEFAULT_SETTINGS = {
   notifyLead: 10 // хэдэн минутын өмнө сануулах
 };
 
+/** Анхны хоосон өгөгдөл — апп шинээр нээгдэхэд юу ч урьдчилан бөглөхгүй. */
+export function emptyData() {
+  return {
+    version: SCHEMA_VERSION,
+    goals: [],
+    tasks: [],
+    habits: [],
+    habitLog: {},
+    settings: { ...DEFAULT_SETTINGS }
+  };
+}
+
 /* ---------- Зуршил ---------- */
 
 export const RULES = [

@@ -210,7 +210,7 @@ export default function DayScreen({ onOpenTask }) {
             {pending > 0 ? ` · ${pending} зуршил хүлээгдэж байна` : ''}
           </div>
         </div>
-        <div className="summary-p">{pct}%</div>
+        <div className="summary-p">{tasks.length ? `${pct}%` : '—'}</div>
       </div>
 
       {selection.active && (

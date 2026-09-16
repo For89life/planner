@@ -67,7 +67,7 @@ export default function CalendarScreen({ onOpenTask }) {
           <div className="hd-right">
             <SearchButton />
             <div style={{ textAlign: 'right' }}>
-              <div className="hd-stat">{month.pct}%</div>
+              <div className="hd-stat">{month.total ? `${month.pct}%` : '—'}</div>
               <div className="hd-sub">сарын гүйцэтгэл</div>
             </div>
           </div>
