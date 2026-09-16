@@ -386,8 +386,12 @@ export default function SettingsScreen({ onEditHabit }) {
 
         {msg && <div className="note">{msg}</div>}
 
-        <div className="card-hint" style={{ textAlign: 'center', marginTop: 6 }}>
-          Төлөвлөгөө v0.2 · өгөгдөл зөвхөн энэ төхөөрөмж дээр хадгалагдана
+        <div className="footer">
+          <div className="footer-name">Gerelt studio</div>
+          <div className="footer-ver">Төлөвлөгөө v0.3</div>
+          <a className="footer-mail" href="mailto:gereltsolutions01@gmail.com">
+            gereltsolutions01@gmail.com
+          </a>
         </div>
       </div>
 
