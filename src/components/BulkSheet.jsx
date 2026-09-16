@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { usePlanner } from '../lib/store.jsx';
+import ConfirmSheet from './ConfirmSheet.jsx';
 import { MONTHS_SHORT, dayTitle, isoWeek, scopeRange } from '../lib/date.js';
 
 /** Багцаар устгах доод хуудас — өдөр / 7 хоног / сар / бүгд. */
 export default function BulkSheet({ date, dark = false, onClose }) {
   const { data, tasksInRange, deleteMany, clearTasksAndHabits } = usePlanner();
+  const [ask, setAsk] = useState(null);
 
   // Зуршил нь ирээдүйд хязгааргүй давтагддаг тул «бүгд» гэдгийг өдрөөр бус
   // загвараар нь тоолж, ажил + зуршлыг бүхэлд нь устгана.
@@ -32,20 +35,22 @@ export default function BulkSheet({ date, dark = false, onClose }) {
   function run(row) {
     if (row.all) {
       if (allCount === 0) return;
-      const ok = confirm(
-        `Бүх ажил (${data.tasks.length}) ба зуршил (${data.habits.length}) бүрмөсөн устана.\n\nЗорилго үлдэнэ.\n\nҮргэлжлүүлэх үү?`
-      );
-      if (!ok) return;
-      clearTasksAndHabits();
-      onClose();
+      setAsk({
+        title: 'Бүх тэмдэглэлийг устгах уу?',
+        message: `${data.tasks.length} ажил, ${data.habits.length} зуршил бүрмөсөн устана. Зорилго үлдэнэ. Буцаах боломжтой.`,
+        label: `${allCount} устгах`,
+        run: clearTasksAndHabits
+      });
       return;
     }
 
     if (row.list.length === 0) return;
-    const ok = confirm(`${row.label} — ${row.list.length} тэмдэглэл бүрмөсөн устана.\n\nҮргэлжлүүлэх үү?`);
-    if (!ok) return;
-    deleteMany(row.list.map((t) => t.id));
-    onClose();
+    setAsk({
+      title: `${row.label}?`,
+      message: `${row.sub} — ${row.list.length} тэмдэглэл бүрмөсөн устана. Буцаах боломжтой.`,
+      label: `${row.list.length} устгах`,
+      run: () => deleteMany(row.list.map((t) => t.id))
+    });
   }
 
   return (
@@ -83,6 +88,20 @@ export default function BulkSheet({ date, dark = false, onClose }) {
           </button>
         </div>
       </div>
+
+      {ask && (
+        <ConfirmSheet
+          title={ask.title}
+          message={ask.message}
+          confirmLabel={ask.label}
+          dark={dark}
+          onConfirm={() => {
+            ask.run();
+            onClose();
+          }}
+          onClose={() => setAsk(null)}
+        />
+      )}
     </div>
   );
 }

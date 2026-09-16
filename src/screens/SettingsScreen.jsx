@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePlanner } from '../lib/store.jsx';
+import ConfirmSheet from '../components/ConfirmSheet.jsx';
 import { ACCENTS, habitSummary } from '../lib/model.js';
 import { askPermission, fire, notifyState } from '../lib/notify.js';
 import { dateKey, today } from '../lib/date.js';
@@ -10,6 +11,7 @@ export default function SettingsScreen({ onEditHabit }) {
   const { data, settings, setSettings, reset, replaceAll, clearAll, progressFor } = usePlanner();
   const [perm, setPerm] = useState(notifyState);
   const [msg, setMsg] = useState('');
+  const [ask, setAsk] = useState(null);
   const fileRef = useRef(null);
 
   useEffect(() => {
@@ -70,9 +72,16 @@ export default function SettingsScreen({ onEditHabit }) {
     reader.onload = () => {
       try {
         const parsed = JSON.parse(String(reader.result));
-        if (!confirm('Одоогийн бүх өгөгдөл файлын өгөгдлөөр солигдоно. Үргэлжлүүлэх үү?')) return;
-        const ok = replaceAll(parsed, 'Файлаас сэргээлээ');
-        setMsg(ok ? 'Сэргээлээ.' : 'Файлын бүтэц таарахгүй байна.');
+        setAsk({
+          title: 'Файлаас сэргээх үү?',
+          message: 'Одоогийн бүх өгөгдөл файлын өгөгдлөөр солигдоно. Буцаах боломжтой.',
+          label: 'Сэргээх',
+          danger: false,
+          run: () => {
+            const ok = replaceAll(parsed, 'Файлаас сэргээлээ');
+            setMsg(ok ? 'Сэргээлээ.' : 'Файлын бүтэц таарахгүй байна.');
+          }
+        });
       } catch {
         setMsg('JSON файлыг уншиж чадсангүй.');
       }
@@ -247,17 +256,28 @@ export default function SettingsScreen({ onEditHabit }) {
 
         <button
           className="row-btn"
-          onClick={() => {
-            if (confirm('Бүх өгөгдлийг жишээ өгөгдлөөр солих уу?')) reset();
-          }}
+          onClick={() =>
+            setAsk({
+              title: 'Жишээ өгөгдлөөр сэргээх үү?',
+              message: 'Одоогийн бүх ажил, зуршил, зорилго жишээ өгөгдлөөр солигдоно. Буцаах боломжтой.',
+              label: 'Сэргээх',
+              danger: false,
+              run: reset
+            })
+          }
         >
           Жишээ өгөгдлөөр сэргээх
         </button>
         <button
           className="row-btn danger"
-          onClick={() => {
-            if (confirm('Бүх ажил, зуршил, зорилгыг цэвэрлэх үү? (Буцаах боломжтой)')) clearAll();
-          }}
+          onClick={() =>
+            setAsk({
+              title: 'Бүх өгөгдлийг цэвэрлэх үү?',
+              message: 'Бүх ажил, зуршил, зорилго устана. Буцаах боломжтой.',
+              label: 'Цэвэрлэх',
+              run: clearAll
+            })
+          }
         >
           Бүх өгөгдлийг цэвэрлэх
         </button>
@@ -268,6 +288,17 @@ export default function SettingsScreen({ onEditHabit }) {
           Төлөвлөгөө v0.2 · өгөгдөл зөвхөн энэ төхөөрөмж дээр хадгалагдана
         </div>
       </div>
+
+      {ask && (
+        <ConfirmSheet
+          title={ask.title}
+          message={ask.message}
+          confirmLabel={ask.label}
+          danger={ask.danger !== false}
+          onConfirm={ask.run}
+          onClose={() => setAsk(null)}
+        />
+      )}
     </div>
   );
 }

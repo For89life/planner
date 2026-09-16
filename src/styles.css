@@ -798,6 +798,8 @@ input, select, textarea { font: inherit; color: inherit; }
   font: 600 13px var(--sans);
 }
 .btn.primary { background: var(--accent); color: #fff; }
+.btn.danger-solid { background: var(--red); color: #fff; }
+.sheet-backdrop.top { z-index: 50; }
 .btn.plain { border: 1px solid var(--edge); color: var(--ink); }
 .sheet.dark .btn.plain { border-color: rgba(255, 255, 255, 0.18); color: var(--d-text); }
 .btn.danger {

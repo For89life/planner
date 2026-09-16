@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { usePlanner } from '../lib/store.jsx';
+import ConfirmSheet from './ConfirmSheet.jsx';
 import { DOW_SHORT, SCOPE_LABEL, dayTitle, parseKey } from '../lib/date.js';
 import { RULES, occurrenceId } from '../lib/model.js';
 
@@ -8,6 +9,7 @@ const SCOPES = ['year', 'quarter', 'month', 'week'];
 /** Зуршлын загвар засах хуудас. date өгсөн бол тухайн өдрийг алгасах боломжтой. */
 export default function HabitSheet({ habit, date = null, dark = false, onClose }) {
   const { saveHabit, deleteHabit, deleteTask, goalFor } = usePlanner();
+  const [ask, setAsk] = useState(null);
   const [form, setForm] = useState(() => ({
     id: habit.id,
     title: habit.title ?? '',
@@ -53,10 +55,11 @@ export default function HabitSheet({ habit, date = null, dark = false, onClose }
   }
 
   function removeHabit() {
-    if (confirm(`«${habit.title}» зуршлыг бүх түүхтэй нь устгах уу?`)) {
-      deleteHabit(habit.id);
-      onClose();
-    }
+    setAsk({
+      title: 'Зуршлыг устгах уу?',
+      message: `«${habit.title}» бүх түүхтэйгээ устана. Буцаах боломжтой.`,
+      run: () => deleteHabit(habit.id)
+    });
   }
 
   return (
@@ -153,6 +156,19 @@ export default function HabitSheet({ habit, date = null, dark = false, onClose }
           </button>
         </div>
       </form>
+
+      {ask && (
+        <ConfirmSheet
+          title={ask.title}
+          message={ask.message}
+          dark={dark}
+          onConfirm={() => {
+            ask.run();
+            onClose();
+          }}
+          onClose={() => setAsk(null)}
+        />
+      )}
     </div>
   );
 }
