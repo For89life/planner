@@ -948,6 +948,38 @@ input, select, textarea { font: inherit; color: inherit; }
   background: var(--card);
   border: 1px solid var(--line);
 }
+/* Заавар — дэлгэгддэг хэсгүүд */
+.help-item {
+  border-radius: 14px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.help-item summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 13px 15px;
+  font: 600 13px var(--sans);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.help-item summary::-webkit-details-marker { display: none; }
+.help-item summary::after {
+  content: '+';
+  flex: none;
+  font: 400 18px/1 var(--sans);
+  color: var(--muted);
+}
+.help-item[open] summary::after { content: '−'; }
+.help-item[open] summary { color: var(--accent); }
+.help-body { padding: 0 15px 14px; font: 400 12.5px/1.6 var(--sans); color: var(--muted-2); }
+.help-body p { margin: 0 0 9px; }
+.help-body p:last-child { margin-bottom: 0; }
+.help-body b { color: var(--ink); font-weight: 600; }
+
 .card-label { font: 600 12.5px var(--sans); color: var(--ink); display: block; }
 .card-hint { font: 400 11px/1.45 var(--sans); color: var(--muted); margin-top: 5px; display: block; }
 .card .seg { margin-top: 9px; }
