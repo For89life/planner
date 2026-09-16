@@ -379,6 +379,11 @@ export default function SettingsScreen({ onEditHabit }) {
           Бүх өгөгдлийг цэвэрлэх
         </button>
 
+        <div className="card-hint">
+          Апп шинээр нээгдэхэд хоосон эхэлдэг. Хэрэв өмнө нь жишээ өгөгдөл орсон бол «Бүх өгөгдлийг цэвэрлэх»
+          дарж хоосон эхлүүлээрэй — хадгалагдсан өгөгдөл өөрөө арилдаггүй.
+        </div>
+
         {msg && <div className="note">{msg}</div>}
 
         <div className="card-hint" style={{ textAlign: 'center', marginTop: 6 }}>
