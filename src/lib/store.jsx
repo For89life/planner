@@ -231,6 +231,20 @@ export function PlannerProvider({ children }) {
     [apply]
   );
 
+  /** Зорилгыг устгаж, түүнд холбогдсон ажил, зуршлын холбоосыг салгана. */
+  const deleteGoal = useCallback(
+    (id) => {
+      if (!id) return;
+      apply('Зорилго устгалаа', (d) => ({
+        ...d,
+        goals: d.goals.filter((g) => g.id !== id),
+        tasks: d.tasks.map((t) => (t.goalId === id ? { ...t, goalId: null } : t)),
+        habits: d.habits.map((h) => (h.goalId === id ? { ...h, goalId: null } : h))
+      }));
+    },
+    [apply]
+  );
+
   const setSettings = useCallback(
     (patch) => apply(null, (d) => ({ ...d, settings: { ...d.settings, ...patch } })),
     [apply]
@@ -384,6 +398,7 @@ export function PlannerProvider({ children }) {
     toggleSelect,
     selectMany,
     saveGoal,
+    deleteGoal,
     reset,
     replaceAll,
     clearAll,

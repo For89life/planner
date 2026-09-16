@@ -43,7 +43,7 @@ export default function HierarchyScreen({ onOpenTask }) {
     <div className="screen" style={{ gap: 14 }}>
       <div className="pad hd">
         <div>
-          <div className="hd-eyebrow">Шатлал</div>
+          <div className="hd-eyebrow">Ерөнхий</div>
           <div className="hd-title sm">
             {DOW_FULL[dowIndex(sel)]}, {sel.getMonth() + 1}/{sel.getDate()} — яагаад чухал вэ
           </div>

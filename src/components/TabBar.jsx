@@ -11,7 +11,7 @@ const TABS = [
   },
   {
     id: 'hierarchy',
-    label: 'Шатлал',
+    label: 'Ерөнхий',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
         <circle cx="6" cy="6" r="2.4" />
