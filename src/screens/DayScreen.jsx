@@ -114,7 +114,7 @@ export default function DayScreen({ onOpenTask }) {
           <i
             key={b.key}
             style={{
-              background: b.on ? 'oklch(0.52 0.1 150)' : 'rgba(255,255,255,.07)',
+              background: b.on ? 'var(--accent)' : 'rgba(255,255,255,.07)',
               opacity: b.on ? b.ramp : 1
             }}
           />
