@@ -202,23 +202,32 @@ function dayState(d, list, t) {
   return 'miss';
 }
 
-/** Сарын өдрүүдийн жижиг бүдүүвч — зөвхөн өнгөт нүднүүд. */
+/** Сарын өдрүүдийн жижиг бүдүүвч — өдрийн дугаартай. */
 function MiniMonth({ d, t, tasksOn }) {
   return (
-    <div className="mini">
-      {monthGrid(d).map((day, i) =>
-        day ? (
-          <i
-            key={dateKey(day)}
-            className={`mini-d is-${dayState(day, tasksOn(day), t)}${
-              dateKey(day) === dateKey(t) ? ' is-now' : ''
-            }`}
-          />
-        ) : (
-          <i key={`e${i}`} className="mini-d is-off" />
-        )
-      )}
-    </div>
+    <>
+      <div className="mini mini-dow">
+        {DOW_SHORT.map((x) => (
+          <span key={x}>{x}</span>
+        ))}
+      </div>
+      <div className="mini">
+        {monthGrid(d).map((day, i) =>
+          day ? (
+            <span
+              key={dateKey(day)}
+              className={`mini-d is-${dayState(day, tasksOn(day), t)}${
+                dateKey(day) === dateKey(t) ? ' is-now' : ''
+              }`}
+            >
+              {day.getDate()}
+            </span>
+          ) : (
+            <span key={`e${i}`} className="mini-d is-off" />
+          )
+        )}
+      </div>
+    </>
   );
 }
 

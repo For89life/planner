@@ -155,9 +155,9 @@ input, select, textarea { font: inherit; color: inherit; }
 
 /* ---------- Жилийн харагдац ---------- */
 
-.months { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.months { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .mcard {
-  padding: 11px 12px 12px;
+  padding: 10px 9px 11px;
   border-radius: 13px;
   border: 1px solid var(--line);
   background: var(--card);
@@ -170,13 +170,30 @@ input, select, textarea { font: inherit; color: inherit; }
 .mcard-pct { font: 500 10px var(--mono); opacity: 0.6; }
 
 /* Жилийн харагдац — сар бүрийн өдрүүдийн бүдүүвч */
-.mini { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-top: 8px; }
-.mini-d { aspect-ratio: 1; border-radius: 2px; background: var(--soft); }
+.mini { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-top: 7px; }
+.mini-dow {
+  margin-top: 8px;
+  font: 500 7.5px var(--mono);
+  color: var(--faint);
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+.mini-d {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: var(--soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 500 8.5px var(--mono);
+  color: var(--muted);
+  letter-spacing: -0.04em;
+}
 .mini-d.is-off { background: transparent; }
-.mini-d.is-plan { background: color-mix(in oklab, var(--accent) 40%, transparent); }
-.mini-d.is-done { background: var(--green); }
-.mini-d.is-part { background: var(--amber); }
-.mini-d.is-miss { background: var(--dim); }
+.mini-d.is-plan { background: color-mix(in oklab, var(--accent) 40%, transparent); color: var(--ink); }
+.mini-d.is-done { background: var(--green); color: #fff; }
+.mini-d.is-part { background: var(--amber); color: #fff; }
+.mini-d.is-miss { background: var(--dim); color: #fff; }
 .mini-d.is-now { outline: 1.5px solid var(--accent); outline-offset: 1px; }
 
 .track {
