@@ -5,6 +5,7 @@ import HierarchyScreen from './screens/HierarchyScreen.jsx';
 import DayScreen from './screens/DayScreen.jsx';
 import SettingsScreen from './screens/SettingsScreen.jsx';
 import TabBar from './components/TabBar.jsx';
+import SecretMark from './components/SecretMark.jsx';
 import TaskSheet from './components/TaskSheet.jsx';
 import HabitSheet from './components/HabitSheet.jsx';
 import SearchSheet from './components/SearchSheet.jsx';
@@ -103,6 +104,8 @@ function Shell() {
         selection.active ? ' is-selecting' : ''
       }`}
     >
+      <SecretMark />
+
       {tab === 'calendar' && <CalendarScreen onOpenTask={openTask} />}
       {tab === 'hierarchy' && <HierarchyScreen onOpenTask={openTask} />}
       {tab === 'day' && <DayScreen onOpenTask={openTask} />}
