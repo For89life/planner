@@ -9,10 +9,15 @@ import {
   DOW_SHORT,
   MONTHS_SHORT,
   ROMAN,
+  addDays,
+  addMonths,
+  addYears,
   dateKey,
   dayTitle,
+  isoWeek,
   monthGrid,
   quarterIndex,
+  scopeKey,
   today,
   weekDays
 } from '../lib/date.js';
@@ -24,6 +29,38 @@ const LEVELS = [
   ['week', '7 хоног'],
   ['day', 'Өдөр']
 ];
+
+const PERIOD_LABEL = {
+  year: 'жилийн гүйцэтгэл',
+  quarter: 'улирлын гүйцэтгэл',
+  month: 'сарын гүйцэтгэл',
+  week: '7 хоногийн гүйцэтгэл',
+  day: 'өдрийн гүйцэтгэл'
+};
+
+/** Идэвхтэй түвшний нэр — гүйлгэх мөрөнд гарна. */
+function periodTitle(level, d) {
+  if (level === 'year') return `${d.getFullYear()} он`;
+  if (level === 'quarter') return `${ROMAN[quarterIndex(d)]} улирал · ${d.getFullYear()}`;
+  if (level === 'month') return `${MONTHS_SHORT[d.getMonth()]} · ${d.getFullYear()}`;
+  if (level === 'week') return `${isoWeek(d).week} дугаар 7 хоног`;
+  return dayTitle(d);
+}
+
+/** Идэвхтэй түвшний нэг нэгжээр урагш/хойш алхана. */
+function shift(level, d, dir) {
+  if (level === 'year') return addYears(d, dir);
+  if (level === 'quarter') return addMonths(d, dir * 3);
+  if (level === 'month') return addMonths(d, dir);
+  if (level === 'week') return addDays(d, dir * 7);
+  return addDays(d, dir);
+}
+
+/** Харж буй хугацаа өнөөдрийг агуулж байна уу. */
+function isCurrent(level, d, t) {
+  if (level === 'day') return dateKey(d) === dateKey(t);
+  return scopeKey(level, d) === scopeKey(level, t);
+}
 
 export default function CalendarScreen({ onOpenTask }) {
   const {
@@ -48,9 +85,10 @@ export default function CalendarScreen({ onOpenTask }) {
 
   const sel = selectedDate;
   const t = today();
-  const month = progressFor('month', sel);
+  const period = progressFor(level, sel);
   const tasks = tasksOn(selected);
   const doneCount = tasks.filter((x) => x.done).length;
+  const atToday = isCurrent(level, sel, t);
 
   const go = (d) => setSelected(dateKey(d));
 
@@ -58,19 +96,31 @@ export default function CalendarScreen({ onOpenTask }) {
     <div className="screen">
       <div className="pad col gap-14">
         <div className="hd">
-          <div>
-            <div className="hd-eyebrow">
-              {sel.getFullYear()} · {ROMAN[quarterIndex(sel)]} улирал
-            </div>
-            <div className="hd-title">{MONTHS_SHORT[sel.getMonth()]}</div>
+          <div className="hd-eyebrow">
+            {sel.getFullYear()} · {ROMAN[quarterIndex(sel)]} улирал
           </div>
           <div className="hd-right">
             <SearchButton />
             <div style={{ textAlign: 'right' }}>
-              <div className="hd-stat">{month.total ? `${month.pct}%` : '—'}</div>
-              <div className="hd-sub">сарын гүйцэтгэл</div>
+              <div className="hd-stat">{period.total ? `${period.pct}%` : '—'}</div>
+              <div className="hd-sub">{PERIOD_LABEL[level]}</div>
             </div>
           </div>
+        </div>
+
+        <div className="nav-row">
+          <button className="nav-btn" onClick={() => go(shift(level, sel, -1))} aria-label="Өмнөх">
+            ‹
+          </button>
+          <div className="hd-title nav-title">{periodTitle(level, sel)}</div>
+          <button className="nav-btn" onClick={() => go(shift(level, sel, 1))} aria-label="Дараах">
+            ›
+          </button>
+          {!atToday && (
+            <button className="today-chip" onClick={() => go(t)}>
+              Өнөөдөр
+            </button>
+          )}
         </div>
 
         <div className="seg">

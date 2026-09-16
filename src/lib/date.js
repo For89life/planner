@@ -43,6 +43,20 @@ export function endOfWeek(d) {
 export const startOfMonth = (d) => new Date(d.getFullYear(), d.getMonth(), 1);
 export const endOfMonth = (d) => new Date(d.getFullYear(), d.getMonth() + 1, 0);
 
+/**
+ * Сар нэмэх/хасах. Өдрийн дугаарыг зорилтот сарын урттай нь тааруулна:
+ * 1/31-д 1 сар нэмэхэд 3/3 биш 2/28 (эсвэл 2/29) болно.
+ */
+export function addMonths(d, n) {
+  const day = d.getDate();
+  const x = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  x.setDate(Math.min(day, endOfMonth(x).getDate()));
+  x.setHours(0, 0, 0, 0);
+  return x;
+}
+
+export const addYears = (d, n) => addMonths(d, n * 12);
+
 export const quarterIndex = (d) => Math.floor(d.getMonth() / 3);
 export const startOfQuarter = (d) => new Date(d.getFullYear(), quarterIndex(d) * 3, 1);
 export const endOfQuarter = (d) => new Date(d.getFullYear(), quarterIndex(d) * 3 + 3, 0);
